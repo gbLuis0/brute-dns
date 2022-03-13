@@ -24,7 +24,7 @@ while per == 'y':
     domain = input('Digite o domínio: ').strip().lower()
     cam = input('caminho da wordlist: (enter para inserir a wordlist da pasta) ').strip()
     if cam == '':
-        cam = getcwd() + 'wordlist.txt'
+        cam = 'wordlist.txt'
     subdomains = open(cam, 'r').read().strip().splitlines()
     for s in subdomains:
         try:
