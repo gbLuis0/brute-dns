@@ -1,38 +1,58 @@
-from os import system, name, getcwd
-try:
-    import dns.resolver
-    from pyfiglet import Figlet
-except:
-    system('pip install dnspython pyfiglet')
-finally:
-    import dns.resolver
-    from pyfiglet import Figlet
+import argparse
+from sys import argv
+import dns.resolver
+from os import system, name
 
-def cls():
-    system('cls' if name == 'nt' else 'clear')
-
-f = '\033[m'
 verm = '\033[31;1m'
 verd = '\033[32;1m'
-dns = dns.resolver.Resolver()
-banner = Figlet('slant').renderText('brute-dns')
+f = '\033[m'
+t = '\033[1;4m'
 
-per = 'y'
-while per == 'y':
-    cls()
-    print('\033[34;1m'+banner+f)
-    domain = input('Digite o domínio: ').strip().lower()
-    cam = input('caminho da wordlist: (enter para inserir a wordlist da pasta) ').strip()
-    if cam == '':
-        cam = 'wordlist.txt'
-    subdomains = open(cam, 'r').read().strip().splitlines()
+dns = dns.resolver.Resolver()
+
+parser = argparse.ArgumentParser(
+    prog='DNS brute',
+    description='Programa de brute force para DNS; by: Spyware'
+)
+
+parser.add_argument(
+    '-d','--domain', metavar=f'{t}DOMAIN{f}',
+    help='Domínio usado para o brute force'
+)
+
+parser.add_argument(
+    '-w', '--wordl', metavar=f'{t}WORDLIST{f}',
+    help='Caminho da wordlist usada para o brute force (use cada subdomínio em linhas diferentes)'
+)
+
+parser.add_argument(
+    '-n', '--notf', metavar=f'{t}False{f}',
+    help='Para mostrar os domínios não encontrados, use este argumento (True)'
+)
+
+system('cls' if name == 'nt' else 'clear')
+
+if len(argv) <= 1:
+    parser.print_help()
+    exit(0)
+
+args = parser.parse_args()
+if not args.wordl:
+    args.wordl = 'wordlist.txt'
+subdomains = open(args.wordl, 'r').read().strip().splitlines()
+try:
     for s in subdomains:
-        try:
-            dom = s + '.' + domain
-            res = dns.resolve(dom, 'A')
-            for i in res:
-                print(f'{dom} -> {verd}{i}{f}') 
-        except:
-            print(dom, verm + 'not found' + f + ' '*50, end='\r')
-    per = input('Deseja voltar? [y/n] ').strip().lower()[0]
-cls()
+            try:
+                dom = s + '.' + args.domain
+                res = dns.resolve(dom)
+                print(f'{dom} ->                     '+''*20)
+                for r in res:
+                    print(f'{verd}{r}{f}')
+                print()
+            except:
+                if args.notf:
+                    print(dom, verm + 'not found' + f)
+                else:
+                    print(dom, verm + 'not found' + f + ' '*50, end='\r')
+except:
+    exit(0)

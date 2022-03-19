@@ -2,6 +2,8 @@
 
 # ***brute-dns***
 
+<img src="img.png" width="500"/>
+
 Um Brute force de DNS feito em python
 
 > Disponível em qualquer shell ✅<br/>
